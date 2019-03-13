@@ -12,8 +12,8 @@ type Repository struct {
 }
 
 // Init initiates Postgre DB instance
-func (p Repository) Init() {
-	conn, err := gorm.Open("postgres", "host=myhost port=myport user=gorm dbname=gorm password=mypassword")
+func (p Repository) Init(conString string) {
+	conn, err := gorm.Open("postgres", conString)
 	if err != nil {
 		fmt.Print(err)
 	}
