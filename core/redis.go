@@ -64,3 +64,13 @@ func setClient(addr string, poolSize int, maxRetries int, password string, db in
 		DB:         db,
 	})
 }
+
+// NewRedisCache manager
+func NewRedisCache(config Config) *RedisCache {
+	client := redis.NewClient(&redis.Options{
+		Addr:     config.RedisURI,
+		Password: config.RedisPass, // no password set
+		DB:       config.RedisDb,   // use default DB
+	})
+	return &RedisCache{client: client}
+}

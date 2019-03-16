@@ -22,14 +22,14 @@ func (p *Repository) Init(conString string) {
 }
 
 // NewRepository initiates a new repository instance
-func NewRepository(config Config) Repository {
+func NewRepository(config Config) *Repository {
 	repository := Repository{}
-	conn, err := gorm.Open("postgres", config.ConnectionString())
+	conn, err := gorm.Open("postgres", config.ConnectionString)
 	if err != nil {
 		fmt.Print(err)
 	}
 	repository.Db = conn
-	return repository
+	return &repository
 }
 
 // Find returns a single record from DB

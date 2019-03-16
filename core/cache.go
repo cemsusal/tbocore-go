@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-type theCache interface {
+type TheCache interface {
 	Get(key string) (interface{}, error)
 	Set(key string, value interface{}) (bool, error)
 	IsSet(key string) (bool, error)
@@ -14,19 +14,19 @@ type theCache interface {
 
 // CacheManager manages cache
 type CacheManager struct {
-	cache theCache
+	Cache TheCache
 }
 
 type acquire func() interface{}
 
 // Get gets or sets a value in cache
 func (c *CacheManager) Get(key string, expiresInSeconds int, acquire acquire) interface{} {
-	isSet, err := c.cache.IsSet(key)
+	isSet, err := c.Cache.IsSet(key)
 	if err != nil {
 		fmt.Println("Cache is set error")
 	}
 	if isSet {
-		cacheResult, cacheErr := c.cache.Get(key)
+		cacheResult, cacheErr := c.Cache.Get(key)
 		if cacheErr != nil {
 			fmt.Println("Cache is set error")
 		}
@@ -34,6 +34,11 @@ func (c *CacheManager) Get(key string, expiresInSeconds int, acquire acquire) in
 	}
 	result := acquire()
 
-	c.cache.Set(key, result)
+	c.Cache.Set(key, result)
 	return result
+}
+
+// NewCacheManager initiates new instance for the cache manager
+func NewCacheManager(theCache TheCache) *CacheManager {
+	return &CacheManager{Cache: theCache}
 }
