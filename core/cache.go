@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// TheCache represents the application cache
 type TheCache interface {
 	Get(key string) (interface{}, error)
 	Set(key string, value interface{}) (bool, error)

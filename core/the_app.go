@@ -8,7 +8,9 @@ type TheApp struct {
 }
 
 // NewApp initiates the app
-func NewApp(cache CacheManager, db Repository) *TheApp {
+func NewApp(cache CacheManager, db Repository, config Config) *TheApp {
 	engine := NewEngine()
-	return &TheApp{Cache: &cache, Db: &db, Engine: engine}
+	repo := NewRepository(config)
+
+	return &TheApp{Cache: &cache, Db: repo, Engine: engine}
 }

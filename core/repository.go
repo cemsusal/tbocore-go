@@ -24,7 +24,10 @@ func (p *Repository) Init(conString string) {
 // NewRepository initiates a new repository instance
 func NewRepository(config Config) *Repository {
 	repository := Repository{}
-	conn, err := gorm.Open("postgres", config.ConnectionString)
+	conStr := "host=%d port=%d user=%d dbname=%d password=%d sslmode=%d"
+	conStr = fmt.Sprintf(conStr, config.Database.Host,
+		config.Database.Port, config.Database.User, config.Database.DbName, config.Database.Password, config.Database.SslMode)
+	conn, err := gorm.Open("postgres", conStr)
 	if err != nil {
 		fmt.Print(err)
 	}
