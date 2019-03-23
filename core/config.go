@@ -24,8 +24,8 @@ type Config struct {
 }
 
 // NewConfig initiates new config instance
-func NewConfig(configFilePath string) *Config {
-	config := loadConfiguration(configFilePath)
+func NewConfig(configPath string) *Config {
+	config := loadConfiguration(configPath)
 	return &config
 }
 

@@ -22,12 +22,12 @@ func (p *Repository) Init(conString string) {
 }
 
 // NewRepository initiates a new repository instance
-func NewRepository(config Config) *Repository {
+func NewRepository(config *Config) *Repository {
 	repository := Repository{}
-	conStr := "host=%d port=%d user=%d dbname=%d password=%d sslmode=%d"
-	conStr = fmt.Sprintf(conStr, config.Database.Host,
-		config.Database.Port, config.Database.User, config.Database.DbName, config.Database.Password, config.Database.SslMode)
+	conStr := "host=" + config.Database.Host + " port=" + config.Database.Port + " user=" + config.Database.User + " dbname=" + config.Database.DbName + " password=" + config.Database.Password + " sslmode=" + config.Database.SslMode
+	// conStr := "host=62.75.148.168 port=5432 user=tmmaster dbname=tmuat password=Dky1qw!! sslmode=disable"
 	conn, err := gorm.Open("postgres", conStr)
+	fmt.Println(conStr)
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -37,30 +37,30 @@ func NewRepository(config Config) *Repository {
 
 // Find returns a single record from DB
 func (p Repository) Find(theType interface{}, where interface{}) interface{} {
-	return p.Db.Find(theType, where)
+	return p.Db.Model(theType).Find(theType, where)
 }
 
 // ByID returns a record for a specific id
 func (p Repository) ByID(theType interface{}, id uint) interface{} {
-	return p.Db.First(theType, id)
+	return p.Db.Model(theType).First(theType, id)
 }
 
 // Create a new record
 func (p Repository) Create(theType interface{}) {
-	p.Db.Create(theType)
+	p.Db.Model(theType).Create(theType)
 }
 
 // Update an existing record
 func (p Repository) Update(theType interface{}) {
-	p.Db.Update(theType)
+	p.Db.Model(theType).Update(theType)
 }
 
 // UpdateField updates a single field
 func (p Repository) UpdateField(fieldName string, theType interface{}) {
-	p.Db.Update(fieldName, theType)
+	p.Db.Model(theType).Update(fieldName, theType)
 }
 
 // Delete a record
 func (p Repository) Delete(theType interface{}) {
-	p.Db.Delete(theType)
+	p.Db.Model(theType).Delete(theType)
 }
