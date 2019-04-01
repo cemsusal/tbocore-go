@@ -2,6 +2,8 @@ package core
 
 import (
 	"fmt"
+	"reflect"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
@@ -12,12 +14,12 @@ type Repository struct {
 }
 
 // Init initiates Postgre DB instance
-func (p *Repository) Init(conString string) {
+func (r *Repository) Init(conString string) {
 	conn, err := gorm.Open("postgres", conString)
 	if err != nil {
 		fmt.Print(err)
 	}
-	p.Db = conn
+	r.Db = conn
 	// defer p.Db.Close()
 }
 
@@ -25,9 +27,7 @@ func (p *Repository) Init(conString string) {
 func NewRepository(config *Config) *Repository {
 	repository := Repository{}
 	conStr := "host=" + config.Database.Host + " port=" + config.Database.Port + " user=" + config.Database.User + " dbname=" + config.Database.DbName + " password=" + config.Database.Password + " sslmode=" + config.Database.SslMode
-	// conStr := "host=62.75.148.168 port=5432 user=tmmaster dbname=tmuat password=Dky1qw!! sslmode=disable"
 	conn, err := gorm.Open("postgres", conStr)
-	fmt.Println(conStr)
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -36,31 +36,42 @@ func NewRepository(config *Config) *Repository {
 }
 
 // Find returns a single record from DB
-func (p Repository) Find(theType interface{}, where interface{}) interface{} {
-	return p.Db.Model(theType).Find(theType, where)
+func (r Repository) Find(entity interface{}, where interface{}) interface{} {
+	t := reflect.TypeOf(entity)
+	return r.Db.Model(t).Find(entity, where)
 }
 
 // ByID returns a record for a specific id
-func (p Repository) ByID(theType interface{}, id uint) interface{} {
-	return p.Db.Model(theType).First(theType, id)
+func (r Repository) ByID(entity interface{}, id uint) (interface{}, error) {
+	t := reflect.TypeOf(entity)
+	retval := r.Db.Model(t).First(entity, id)
+	return retval.Value, retval.Error
 }
 
 // Create a new record
-func (p Repository) Create(theType interface{}) {
-	p.Db.Model(theType).Create(theType)
+func (r Repository) Create(entity interface{}) (interface{}, error) {
+	t := reflect.TypeOf(entity)
+	d := r.Db.Model(t).Create(entity)
+	return d.Value, d.Error
 }
 
 // Update an existing record
-func (p Repository) Update(theType interface{}) {
-	p.Db.Model(theType).Update(theType)
+func (r Repository) Update(entity interface{}) (interface{}, error) {
+	t := reflect.TypeOf(entity)
+	d := r.Db.Model(t).Update(entity)
+	return d.Value, d.Error
 }
 
 // UpdateField updates a single field
-func (p Repository) UpdateField(fieldName string, theType interface{}) {
-	p.Db.Model(theType).Update(fieldName, theType)
+func (r Repository) UpdateField(fieldName string, entity interface{}) (interface{}, error) {
+	t := reflect.TypeOf(entity)
+	d := r.Db.Model(t).Update(fieldName, entity)
+	return d.Value, d.Error
 }
 
 // Delete a record
-func (p Repository) Delete(theType interface{}) {
-	p.Db.Model(theType).Delete(theType)
+func (r Repository) Delete(entity interface{}) (interface{}, error) {
+	t := reflect.TypeOf(entity)
+	d := r.Db.Model(t).Delete(entity)
+	return d.Value, d.Error
 }

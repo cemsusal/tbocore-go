@@ -12,6 +12,12 @@ type RedisCache struct {
 	client *redis.Client
 }
 
+// Get(key string) (interface{}, error)
+// 	Set(key string, value interface{}) (bool, error)
+// 	IsSet(key string) (bool, error)
+// 	Remove(key string) (bool, error)
+// 	RemoveByPattern(pattern string) (bool, error)
+
 // Set a value by a given key
 func (rc RedisCache) Set(key string, value interface{}, expiresIn time.Duration) (bool, error) {
 	serializedValue, _ := json.Marshal(value)
@@ -28,25 +34,25 @@ func (rc RedisCache) Get(key string) (interface{}, error) {
 }
 
 // IsSet check a keys is already set
-func (rc RedisCache) IsSet(key string) (int64, error) {
+func (rc RedisCache) IsSet(key string) (bool, error) {
 	isSet, err := rc.client.Exists(key).Result()
-	return isSet, err
+	return isSet > 0, err
 }
 
 // Remove deletes a value by its key
-func (rc RedisCache) Remove(key string) (int64, error) {
-	isSet, err := rc.client.Del(key).Result()
-	return isSet, err
+func (rc RedisCache) Remove(key string) (bool, error) {
+	isRemoved, err := rc.client.Del(key).Result()
+	return isRemoved > 0, err
 }
 
 // RemoveByPattern removes all values matching pattern
-func (rc RedisCache) RemoveByPattern(pattern string) (int64, error) {
+func (rc RedisCache) RemoveByPattern(pattern string) (bool, error) {
 	keys, err := rc.client.Keys(pattern).Result()
 	if err != nil {
 		panic("Could not identify the key set")
 	}
 	isRemoved, rmErr := rc.client.Del(strings.Join(keys, ",")).Result()
-	return isRemoved, rmErr
+	return isRemoved > 0, rmErr
 }
 
 // Init a redis client instance
@@ -66,7 +72,7 @@ func setClient(addr string, poolSize int, maxRetries int, password string, db in
 }
 
 // NewRedisCache manager
-func NewRedisCache(config Config) *RedisCache {
+func NewRedisCache(config *Config) *RedisCache {
 	client := redis.NewClient(&redis.Options{
 		Addr:     config.Redis.Host,
 		Password: config.Redis.Password, // no password set

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"time"
 )
 
 // Config configures the application
@@ -21,6 +22,21 @@ type Config struct {
 		Password string `json:"password"`
 		Db       int    `json:"db"`
 	} `json:"redis"`
+	Elastic struct {
+		Uris                      []string      `json:"uris"`
+		Username                  string        `json:"username"`
+		Password                  string        `json:"password"`
+		SetSniff                  bool          `json:"db"`
+		SnifferTimeout            time.Duration `json:"sniffer_time_out"`
+		SnifferTimeoutStartup     time.Duration `json:"sniffer_time_out_startup"`
+		SnifferInterval           time.Duration `json:"sniffer_interval"`
+		SetHealthcheck            bool          `json:"set_healthcheck"`
+		HealthcheckTimeout        time.Duration `json:"healthcheck_time_out"`
+		HealthcheckTimeoutStartup time.Duration `json:"healthcheck_time_out_startup"`
+		HealthcheckInterval       time.Duration `json:"healthcheck_interval"`
+		RequiredPlugins           []string      `json:"plugins"`
+		SetGzip                   bool          `json:"¨set_gzip"`
+	} `json:"elastic"`
 }
 
 // NewConfig initiates new config instance
