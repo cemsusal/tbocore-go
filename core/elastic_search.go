@@ -18,10 +18,11 @@ type ElasticSearch struct {
 	Aggregations []Aggregation
 }
 
+// Aggregation defines the aggregation options
 type Aggregation struct {
 	Agg        string
-	SubAgg     string
 	Name       string
+	SubAgg     string
 	SubAggName string
 }
 
@@ -291,15 +292,14 @@ func (e *ElasticSearch) Scroll(indexName string, theType interface{}, size int) 
 		g.Go(func() error {
 			for hit := range hits {
 				// Deserialize
-				var arbitrary_json map[string]theType
-				json.Unmarshal([]byte(hit), &arbitrary_json)
+				err := json.Unmarshal(hit, &theType)
 				if err != nil {
 					return err
 				}
 
 				// Do something with the product here, e.g. send it to another channel
 				// for further processing.
-				_ = tp
+				_ = &theType
 
 				// Terminate early?
 				select {
